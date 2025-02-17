@@ -1,0 +1,111 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.framework-sidebar
+{
+width: 250px;
+height: 100vh;
+color: #667085;
+display: flex;
+flex-direction: column;
+  background-color: #0F172A;
+}
+
+.layout
+{
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+.snb
+{
+width: 250px;
+transition: 0.3s;
+overflow: hidden;
+
+}
+
+.logo
+{
+  width: 100%;
+  padding: 20px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.lvl1-name
+{
+  padding-top: 28px;
+}
+.lvl1-name p
+{
+  color: #13c690;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space:  nowrap;
+}
+
+.lvl2-name
+{
+  height: 36px;
+  padding:0px 20px;
+  border-radius: 4px;
+
+  color: #9ca3af;
+  transition: 0.2s;
+  cursor: pointer;
+}
+* {
+  font-family: "Pretendard", "Pretendard-Bold", "Pretendard-Medium", "Pretendard-SemiBold" !important;
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+}
+
+.lvl1-name
+{
+  text-align: left;
+  padding-top: 28px;
+  padding:40px 28px 8px;
+}
+.level2 li
+{
+  align: right;
+  
+}
+.lvl2-name 
+{
+}
