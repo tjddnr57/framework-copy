@@ -14,7 +14,7 @@ function PageTitle() {
     "/Line": "라인",
     "/Process": "공정",
     "/Equipment": "설비",
-    "/Mold": "금형형",
+    "/Mold": "금형",
   };
 
   // 현재 경로에 해당하는 제목이 있으면 사용, 없으면 기본값 "품목"
