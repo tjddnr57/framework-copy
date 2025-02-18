@@ -1,0 +1,33 @@
+.nav
+{
+display: flex;
+height: 56px;
+width: 100%;
+background-color: white;
+justify-content: space-between;
+border-bottom: 1px solid #DCDCDC;
+position: relative;
+padding: 15px 40px 0px 40px;
+}
+.nav-menu img
+{
+width: 30px;
+height: 30px;
+cursor: pointer;
+}
+.nav-book img
+{
+width: 30px;
+height: 30px;
+cursor: pointer;
+
+}
+
+.nav-menu 
+{
+display: inline;
+}
+.nav-book
+{
+  display: inline;
+}

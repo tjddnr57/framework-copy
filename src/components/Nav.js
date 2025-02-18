@@ -1,14 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
+import './Nav.css';
+import menuimg from './menuimg.png'
+import bookimg from './bookimg.png'
+
+function Nav() {
     return (
-        <div className="App">
-            <header className="App-header">
-               
-            </header>
+        <div className="nav">
+            <div className="nav-menu"  >
+                <i><img src={menuimg} /></i>
+            </div>
+            <div className="nav-book"  >
+            <i><img src={bookimg}/></i>
+            </div>
         </div>
     );
 }
 
-export default App;
+export default Nav;
