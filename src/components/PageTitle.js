@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
+import "./PageTitle.css";
 
 function PageTitle() {
   // useLocation 훅을 사용하여 현재 경로를 가져옴
@@ -22,13 +23,13 @@ function PageTitle() {
 
   return (
     <div className="pagetitlecomponent">
-      <span>{title}</span>
-      <span>|</span>
-      <span>생산정보관리</span>
-      <span>{">"}</span>
-      <span>품목정보관리</span>
-      <span>{">"}</span>
-      <span>{title}</span>
+      <span>{title}&nbsp;&nbsp;</span>
+      <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+      <span>&nbsp;&nbsp;생산정보관리&nbsp;&nbsp;</span>
+      <span>&nbsp;&nbsp;{">"}&nbsp;&nbsp;</span>
+      <span>&nbsp;&nbsp;품목정보관리&nbsp;&nbsp;</span>
+      <span>&nbsp;&nbsp;{">"}&nbsp;&nbsp;</span>
+      <span>&nbsp;&nbsp;{title}</span>
     </div>
   );
 }

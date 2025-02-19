@@ -1,85 +1,57 @@
-import React, { useState } from 'react';
-import './SideBar.css'; // CSS 파일
-import symbol from '../assets/symbol.svg';
-import logo from '../assets/logo.svg';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import "./SubSidebar.css"
+function SubSidebar({onSendMessage}) {
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const location = useLocation();
+  const pathname = location.pathname;
+  const handleSendMessage = (categoryid) => {
+    setSelectedCategory(categoryid);
+    onSendMessage(categoryid);}; // 부모에게 메시지 전달
 
-function SideBar() {
-  const [activeCategory, setActiveCategory] = useState(null); // 선택된 카테고리 관리
-
-    const toggleCategory = (category) => {
-        setActiveCategory((prevCategory) =>
-            prevCategory === category ? null : category
-        );
+    const titleMap = {
+      "/ProductGroup": ["/api/ProductGroup", "사업부 정보", "interx"],
+      "/ItemMaster": ["/api/ItemMaster", "품목 분류", "전체"],
+      "/Factory": ["/api/Factory", "사업부 정보", "interx"],
+      "/Line": ["/api/Line", "공장 조직도", "interx"],
+      "/Process": ["/api/Process", "사업부 정보", "interx"],
+      "/Equipment": ["/api/Equipment", "공장 조직도", "interx"],
+      "/Mold": ["/api/Mold", "공장 조직도", "interx"],
     };
+    const title = titleMap[pathname] || titleMap["/ProductGroup"];
+    useEffect(() => {
+
+      fetch(title[0])
+        .then((res) => res.json())
+        .then((data) => setCategories(data))
+        .catch((error) => console.error("Error fetching categories:", error));
+    }, [title]);
 
     return (
-        <div className="sidebar">
-            <div className="menu">
-                <div className='logo'>
-                    <img src={symbol} alt="symbol" />
-                    <img src={logo} alt='logo' />
-                </div>
-                <ul className="level1">
-                    <p>생산정보관리</p>
 
-                    <li>
-                        <div
-                            className="lvl1-name"
-                            onClick={() => toggleCategory('a')}
-                        >
-                            <p>품목정보관리</p>
-                        </div>
-                        <div
-                            className={`level2-wrapper ${activeCategory === 'a' ? 'open' : ''}`}
-                        >
-                            <ul className="level2">
-                                <Link to="/ProductGroup"><li>제품군</li></Link>
-                                <Link to="/ItemMaster"><li>품목</li></Link>
-                          </ul>
-                      </div>
-                  </li>
-
-                  {/* Category B */}
-                  <li>
-                      <div
-                          className="lvl1-name"
-              onClick={() => toggleCategory('b')}
-            >
-              <p>공정정보관리</p>
-            </div>
-            <div
-              className={`level2-wrapper ${activeCategory === 'b' ? 'open' : ''}`}
-            >
-              <ul className="level2">
-             <Link to="/Factory"><li>공장</li></Link>
-              <Link to="/Line"><li>라인</li></Link>
-              <Link to="/Process"><li>공정</li></Link>
-              </ul>
-            </div>
+      <div className="p-4">
+        <h2 className="text-lg font-bold mb-2">{title[1]}</h2>
+        <ul className="space-y-2">
+          <li className="subtitle-parentnode">
+            <p >{title[2]}</p>
           </li>
-
-          {/* Category C */}
-          <li>
-            <div
-              className="lvl1-name"
-              onClick={() => toggleCategory('c')}
+          {categories.map((category) => (
+            <li
+              key={category.id}
+              className={`p-2 rounded cursor-pointer ${selectedCategory === category.id
+                ? "bg-blue-500 text-white"
+                : "bg-gray-100 hover:bg-gray-200"
+                }`}
+              onClick={() => handleSendMessage()}
             >
-              <p>설비정보관리</p>
-            </div>
-            <div
-              className={`level2-wrapper ${activeCategory === 'c' ? 'open' : ''}`}
-            >
-              <ul className="level2">
-             <Link to="/Equipment"><li>설비</li></Link>
-             <Link to="/Mold"><li>금형</li></Link>
-              </ul>
-            </div>
-          </li>
+              {category.name}
+            </li>
+          ))}
         </ul>
       </div>
-    </div>
-  );
-}
 
-export default SideBar;
+    );
+  };
+
+  export default SubSidebar;
