@@ -1,105 +1,131 @@
-import React, { useState, useMemo } from 'react';
-import { useTable, useFilters } from 'react-table';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import './DataGrid.css'; // 스타일을 별도의 CSS 파일로 분리
 
-// 예시 데이터 (경로를 key로 한 객체 형태)
-const data = {
-  '/home': { path: '/home', name: 'Home', type: 'directory' },
-  '/home/user': { path: '/home/user', name: 'User', type: 'directory' },
-  '/home/user/documents': { path: '/home/user/documents', name: 'Documents', type: 'directory' },
-  '/home/user/images': { path: '/home/user/images', name: 'Images', type: 'file' },
-};
+const DataGrid = () => {
+  const location = useLocation(); // 현재 경로
+  const currentPath = location.pathname; // 경로에 따라 데이터와 컬럼 변경
 
-const Table = () => {
-  const [filterInput, setFilterInput] = useState('');
-  
-  // 데이터를 배열로 변환
-  const rowData = useMemo(() => Object.values(data), [data]);
+  const [data, setData] = useState([]);
+  const [columnsToDisplay, setColumnsToDisplay] = useState([]);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+  const [filterText, setFilterText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // 리액트 테이블을 설정
-  const columns = useMemo(
-    () => [
-      {
-        Header: 'Path',
-        accessor: 'path', // 데이터의 path 값을 사용
-      },
-      {
-        Header: 'Name',
-        accessor: 'name', // 데이터의 name 값을 사용
-      },
-      {
-        Header: 'Type',
-        accessor: 'type', // 데이터의 type 값을 사용
-      },
-    ],
-    []
-  );
-
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    setFilter,
-  } = useTable(
-    {
-      columns,
-      data: rowData, // 배열 형식으로 변환된 데이터
-      initialState: {
-        filters: [], // 초기 필터 상태는 비워두기
-      },
-    },
-    useFilters // 필터 기능 활성화
-  );
-
-  // 버튼 클릭 시 path와 type 필터를 동시에 적용
-  const handleFilterChange = () => {
-    // path나 type에 검색어가 포함되면 해당 항목을 필터링 (OR 조건)
-    setFilter('path', (value) => value.includes(filterInput)); // path 필터링
-    setFilter('type', (value) => value.includes(filterInput)); // type 필터링
+  // 경로에 맞는 API URL과 컬럼 정의
+  const apiUrls = {
+    '/path1': 'https://api.example.com/data1',
+    '/path2': 'https://api.example.com/data2',
   };
 
+  const columns = {
+    '/path1': ['ID', 'Name', 'Code', 'Description'],
+    '/path2': ['NO', 'Activity', 'Process Code', 'Description'],
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(apiUrls[currentPath]);
+        if (!response.ok) {
+          throw new Error('데이터를 불러오는 데 실패했습니다');
+        }
+
+        const result = await response.json();
+        setData(result);
+        setColumnsToDisplay(columns[currentPath] || []);
+        setPageIndex(0);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [currentPath]);
+
+  const filteredData = data.filter(item =>
+    Object.values(item).some(value =>
+      value.toString().toLowerCase().includes(filterText.toLowerCase())
+    )
+  );
+
+  const paginatedData = filteredData.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
+
+  const goToNextPage = () => {
+    if ((pageIndex + 1) * pageSize < filteredData.length) {
+      setPageIndex(pageIndex + 1);
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (pageIndex > 0) {
+      setPageIndex(pageIndex - 1);
+    }
+  };
+
+  const handlePageSizeChange = (event) => {
+    setPageSize(Number(event.target.value));
+    setPageIndex(0);
+  };
+
+  const handleFilterChange = (event) => {
+    setFilterText(event.target.value);
+    setPageIndex(0);
+  };
+
+  if (loading) return <div>로딩 중...</div>;
+  if (error) return <div>오류 발생: {error}</div>;
+
   return (
-    <div>
-      {/* 검색창과 버튼 - Path 및 Type 필터 */}
-      <div>
+    <div className="data-grid-container">
+      <div className="filter-container">
         <input
           type="text"
-          value={filterInput}
-          onChange={(e) => setFilterInput(e.target.value)} // 입력값 상태 업데이트
-          placeholder="Search by path or type"
+          className="filter-input"
+          placeholder="검색..."
+          value={filterText}
+          onChange={handleFilterChange}
         />
-        <button onClick={handleFilterChange}>Filter</button>
+        <select onChange={handlePageSizeChange} value={pageSize} className="page-size-dropdown">
+          <option value={5}>5개</option>
+          <option value={10}>10개</option>
+          <option value={15}>15개</option>
+          <option value={20}>20개</option>
+        </select>
       </div>
 
-      {/* 테이블 출력 */}
-      <table {...getTableProps()} border="1">
+      <table className="data-table">
         <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>
-                  {column.render('Header')}
-                </th>
+          <tr>
+            {columnsToDisplay.map((column, index) => (
+              <th key={index}>{column}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedData.map((row, index) => (
+            <tr key={index}>
+              {columnsToDisplay.map((column, idx) => (
+                <td key={idx}>{row[column.toLowerCase()] || row[column.toLowerCase().replace(' ', '')]}</td>
               ))}
             </tr>
           ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
-                })}
-              </tr>
-            );
-          })}
         </tbody>
       </table>
+
+      <div className="pagination-controls">
+        <button onClick={goToPrevPage} disabled={pageIndex === 0} className="pagination-button">이전</button>
+        <button onClick={goToNextPage} disabled={(pageIndex + 1) * pageSize >= filteredData.length} className="pagination-button">다음</button>
+      </div>
     </div>
   );
 };
 
-export default Table;
+export default DataGrid;
