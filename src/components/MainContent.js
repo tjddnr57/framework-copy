@@ -16,14 +16,46 @@ const DataGrid = () => {
 
   // 경로에 맞는 API URL과 컬럼 정의
   const apiUrls = {
-    '/path1': 'https://api.example.com/data1',
-    '/path2': 'https://api.example.com/data2',
+    '/ProductGroup': 'https://localhost:7204/api/ProductGroup',
+    '/ItemMaster': 'https://localhost:7204/api/ItemMaster',
+    '/Factory': 'https://localhost:7204/api/Factory',
+    '/Line': 'https://localhost:7204/api/Line',
+    '/Process': 'https://localhost:7204/api/Process',
+    '/Equipment': 'https://localhost:7204/api/Equipment',
+    '/Mold': 'https://localhost:7204/api/Mold',
   };
 
   const columns = {
-    '/path1': ['ID', 'Name', 'Code', 'Description'],
-    '/path2': ['NO', 'Activity', 'Process Code', 'Description'],
+    '/ProductGroup': {
+      columns: ['NO', '활동', '제품군코드', '제품군명', '사업부', '설명'],
+      fieldNames: ['no', 'activity', 'productGroupCode', 'productGroupName', 'departmentName', 'description'],
+    },
+    '/ItemMaster': {
+      columns: ['NO', '활동', '이미지', '품목코드', '품목명', '제품군코드', '제품군명', '품목분류', 'Eo No.', 'Eo 날짜', '고객사', '소재', '크기(너비*길이*높이)', '중량(kg)', '설명'],
+      fieldNames: ['no', 'activity', 'imageUrl', 'itemCode', 'itemName', 'productGroupCode', 'productGroupName', 'itemClassificationName', 'eoNumber', 'eoDate', 'customer', 'material', 'dimensions', 'weightKg', 'description'],
+    },
+    '/Factory': {
+      columns: ['NO', '활동', '공장코드', '공장명', '사업부', '설명'],
+      fieldNames: ['no', 'activity', 'factoryCode', 'factoryName', 'departmentName', 'description'],
+    },
+    '/Line': {
+      columns: ['NO', '활동', '라인코드', '라인명', '공장명', '설명'],
+      fieldNames: ['no', 'activity', 'lineCode', 'lineName', 'factoryName', 'description'],
+    },
+    '/Process': {
+      columns: ['NO', '활동', '공정코드', '공정명', '사업부', '설명'],
+      fieldNames: ['no', 'activity', 'processCode', 'processName', 'departmentName', 'description'],
+    },
+    '/Equipment': {
+      columns: ['NO', '활동', '이미지', '설비종류', '설비코드', '설비명', '공장명', '제작사', '공급사', '모델번호', '설치일', '설명'],
+      fieldNames: ['no', 'activity', 'imageUrl', 'equipmentType', 'equipmentCode', 'equipmentName', 'factoryName', 'manufacturer', 'supplier', 'modelNumber', 'installationDate', 'description'],
+    },
+    '/Mold': {
+      columns: ['NO', '활동', '이미지', '금형 및 공구코드', '금형 및 공구명', '금형 및 공구호수', '공장명', '관리부서', '설명'],
+      fieldNames: ['no', 'activity', 'imageUrl', 'moldtoolCode', 'moldtoolName', 'moldtoolNumber', 'factoryName', 'managementDepartment', 'description'],
+    },
   };
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -102,23 +134,25 @@ const DataGrid = () => {
       </div>
 
       <table className="data-table">
-        <thead>
-          <tr>
-            {columnsToDisplay.map((column, index) => (
-              <th key={index}>{column}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.map((row, index) => (
-            <tr key={index}>
-              {columnsToDisplay.map((column, idx) => (
-                <td key={idx}>{row[column.toLowerCase()] || row[column.toLowerCase().replace(' ', '')]}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  <thead>
+    <tr>
+      {columnsToDisplay.columns?.map((column, index) => (
+        <th key={index}>{column}</th>
+      ))}
+    </tr>
+  </thead>
+  <tbody>
+    {paginatedData.map((row, index) => (
+      <tr key={index}>
+        {columnsToDisplay.fieldNames?.map((field, idx) => {
+          const value = row[field] ?? '-'; // NULL 값이면 '-' 표시
+          return <td key={idx}>{value}</td>;
+        })}
+      </tr>
+    ))}
+  </tbody>
+</table>
+
 
       <div className="pagination-controls">
         <button onClick={goToPrevPage} disabled={pageIndex === 0} className="pagination-button">이전</button>
